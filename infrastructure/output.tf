@@ -17,3 +17,7 @@ output "private_subnet_id_1" {
 output "private_subnet_id_2" {
   value = aws_subnet.private_subnet_2.id
 }
+
+output "alb_dns" {
+  value = "http://${aws_lb.api_service_lb.dns_name}"
+}
