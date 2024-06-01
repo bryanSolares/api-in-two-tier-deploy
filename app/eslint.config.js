@@ -3,7 +3,7 @@ import globals from 'globals'
 export default [
     {
         files: ['**/*.js'],
-        ignores: ['node_modules/**', 'test/*'],
+        ignores: ['node_modules/**', 'test/*', "*.tf"],
         languageOptions: {
             globals: globals.browser,
             parserOptions: {
