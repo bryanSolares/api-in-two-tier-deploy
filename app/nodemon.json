@@ -1,6 +1,0 @@
-{
-    "watch": ["src", ".env"],
-    "ext": "js,ts,json",
-    "verbo": true,
-    "ignore": ["*.test.js"]
-}
