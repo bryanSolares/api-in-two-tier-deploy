@@ -21,3 +21,7 @@ output "private_subnet_id_2" {
 output "alb_dns" {
   value = "http://${aws_lb.api_service_lb.dns_name}"
 }
+
+output "bastion_public_ip" {
+  value = aws_instance.bastion_host.public_ip
+}

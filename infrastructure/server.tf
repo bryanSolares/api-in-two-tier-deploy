@@ -9,10 +9,11 @@ resource "aws_launch_template" "template_app" {
     }
   }
 
-  image_id               = "ami-0014ef03223b2332b"
+  image_id               = "ami-00beae93a2d981137"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.private_access_instance.id, aws_security_group.private_access_instance.id]
   user_data              = filebase64("${path.module}/userdata/init_app.sh")
+  key_name               = aws_key_pair.bastion_key.key_name
 
 }
 
@@ -23,7 +24,7 @@ resource "aws_lb_target_group" "api_service" {
   protocol = "HTTP"
   vpc_id   = aws_vpc.default_vpc.id
   health_check {
-    path    = "/health"
+    path    = "/"
     matcher = 200
   }
 }
@@ -57,8 +58,9 @@ resource "aws_autoscaling_group" "api_service" {
   health_check_grace_period = 300
   health_check_type         = "ELB"
   force_delete              = true
-  vpc_zone_identifier       = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
-  target_group_arns         = [aws_lb_target_group.api_service.arn]
+
+  vpc_zone_identifier = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
+  target_group_arns   = [aws_lb_target_group.api_service.arn]
 
   launch_template {
     id      = aws_launch_template.template_app.id
@@ -67,19 +69,21 @@ resource "aws_autoscaling_group" "api_service" {
 
 }
 
+resource "aws_key_pair" "bastion_key" {
+  key_name   = "bastion"
+  public_key = file("./key-ssh/bastion.pub")
+}
 
 
+resource "aws_instance" "bastion_host" {
+  ami                    = "ami-0d191299f2822b1fa"
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.public_subnet_1.id
+  vpc_security_group_ids = [aws_security_group.bastion_ssh_access.id]
+  key_name               = aws_key_pair.bastion_key.key_name
 
+  tags = {
+    Name = "Bastion"
+  }
 
-# resource "aws_instance" "bastion_host" {
-#   ami                    = "ami-0d191299f2822b1fa"
-#   instance_type          = "t2.micro"
-#   subnet_id              = aws_subnet.public_subnet_1.id
-#   vpc_security_group_ids = [aws_security_group.bastion_ssh_access.id]
-
-
-#   tags = {
-#     Name = "Bastion"
-#   }
-
-# }
+}

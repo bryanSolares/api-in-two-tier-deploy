@@ -4,3 +4,6 @@ node_modules
 # Terraform
 .terraform*
 terraform*
+
+#SSH Key
+bastion*

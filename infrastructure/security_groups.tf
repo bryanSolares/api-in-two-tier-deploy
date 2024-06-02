@@ -59,6 +59,13 @@ resource "aws_security_group" "private_access_instance" {
     security_groups = [aws_security_group.load_balancer.id]
   }
 
+  ingress {
+    from_port       = 3500
+    to_port         = 3500
+    protocol        = "tcp"
+    security_groups = [aws_security_group.load_balancer.id]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
